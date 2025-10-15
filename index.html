@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="fa">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>دستیار شما | YLZ Company</title>
+  <style>
+    body { margin:0; font-family: Tahoma, sans-serif; direction: rtl; background:#faf8f3; height:100vh; }
+    #chat-btn {
+      position: fixed; bottom: 20px; right: 20px;
+      background: linear-gradient(135deg, #d4af37, #f5d76e);
+      color: white; border: none; border-radius: 50%;
+      width: 60px; height: 60px; font-size: 24px; cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    #chat-box {
+      position: fixed; bottom: 90px; right: 20px;
+      width: 300px; height: 400px; background: white;
+      border: 2px solid #d4af37; border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      display: none; flex-direction: column; overflow: hidden;
+      animation: fadeIn .3s ease;
+    }
+    @keyframes fadeIn { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+    .chat-header {
+      background: linear-gradient(135deg, #d4af37, #f5d76e);
+      color: white; padding: 10px; text-align: center; font-weight: bold;
+    }
+    .chat-messages {
+      flex: 1; padding: 10px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 8px;
+      background:#fffef7;
+    }
+    .msg { padding: 8px 10px; border-radius: 10px; max-width: 80%; }
+    .user { align-self: flex-start; background: #f9e79f; }
+    .bot { align-self: flex-end; background: #fdf2d0; border: 1px solid #d4af37; }
+    .chat-input { display: flex; border-top: 1px solid #ddd; }
+    .chat-input input {
+      flex:1; border:none; padding:10px; outline:none; font-family:inherit;
+    }
+    .chat-input button {
+      background: #d4af37; border:none; color:white; padding:0 15px; cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <button id="chat-btn">💬</button>
+
+  <div id="chat-box">
+    <div class="chat-header">دستیار شما</div>
+    <div class="chat-messages" id="messages"></div>
+    <div class="chat-input">
+      <input type="text" id="input" placeholder="پیام خود را بنویسید..." />
+      <button id="send">ارسال</button>
+    </div>
+  </div>
+
+  <script>
+    const chatBtn = document.getElementById('chat-btn');
+    const chatBox = document.getElementById('chat-box');
+    const messages = document.getElementById('messages');
+    const input = document.getElementById('input');
+    const sendBtn = document.getElementById('send');
+
+    chatBtn.addEventListener('click', () => {
+      chatBox.style.display = chatBox.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    function appendMessage(text, who='bot'){
+      const div = document.createElement('div');
+      div.className = 'msg ' + who;
+      div.textContent = text;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    const rules = [
+      { keys: ['سلام'], reply: 'سلام! چطور می‌تونم کمکتون کنم؟' },
+      { keys: ['قیمت'], reply: 'لطفا بفرمایید درباره‌ی کدوم محصول YLZ Company؟' },
+      { keys: ['خداحافظ'], reply: 'خدانگهدار! امیدوارم تجربه‌ی خوبی داشته باشید 🌟' },
+    ];
+
+    function botReply(userText){
+      const txt = userText.toLowerCase();
+      for(const rule of rules){
+        for(const k of rule.keys){
+          if(txt.includes(k)) return rule.reply;
+        }
+      }
+      return 'ممنون از پیامتون! تیم YLZ Company بزودی پاسخ می‌دهد.';
+    }
+
+    function send(){
+      const text = input.value.trim();
+      if(!text) return;
+      appendMessage(text, 'user');
+      input.value = '';
+      setTimeout(() => appendMessage(botReply(text), 'bot'), 400);
+    }
+
+    sendBtn.addEventListener('click', send);
+    input.addEventListener('keydown', e => { if(e.key==='Enter') send(); });
+
+    appendMessage('سلام و خوش آمدید به گروه صنعتی YLZ Company!\nما اینجاییم تا بهتون کمک کنیم بهترین آپشن‌های خودرو را با بهترین کیفیت انتخاب کنید 🚗✨','bot');
+  </script>
+</body>
+</html>
